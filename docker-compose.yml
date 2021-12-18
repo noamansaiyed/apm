@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  apache:
+    image: noamansaiyed/apm:7.4
+    #user: 1000:1000
+    container_name: apache
+    volumes:
+      - /var/www/html/html:/var/www/html/html:rw
+      - /var/www/html/public:/var/www/html/public:rw
+      - /var/www/html/logs:/var/log/apache2:rw
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+  database:
+    image: mariadb:10.2
+    command: [--ignore-db-dir=lost+found]
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+       - /opt/mysql_data:/var/lib/mysql
+    command: mysqld --max_allowed_packet=1024M
+    ports:
+      - "3306:3306"
+    restart: always
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "9000:80"
+    environment:
+      - MEMORY_LIMIT=512M
+      - PMA_HOST=database
+      - UPLOAD_LIMIT=1024M
+    restart: always
