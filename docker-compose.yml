@@ -1,19 +1,32 @@
-version: '3.7'
+version: '3.3'
 services:
-  apache:
-    image: noamansaiyed/apm:7.4
-    #user: 1000:1000
-    container_name: apache
+  apache74:
+    image: noamansaiyed/apm-apache:7.4
+    container_name: apache74
+    links:
+      - database
+      - php74
+      - phpmyadmin
     volumes:
-      - /var/www/html/html:/var/www/html/html:rw
-      - /var/www/html/public:/var/www/html/public:rw
-      - /var/www/html/logs:/var/log/apache2:rw
+      - /opt/www/html:/opt/www/html:rw
+      - /opt/www/public:/opt/www/public:rw
+      - /opt/www/logs:/var/log/apache2:rw
     ports:
       - "80:80"
       - "443:443"
-    links:
-      - database:mariadb
     restart: always
+  php74:
+    image: noamansaiyed/apm-fpm:7.4
+    user: ${UID_GID}
+    container_name: php74
+    restart: always
+    working_dir: /opt/www/
+    links:
+      - database
+    volumes:
+      - /opt/www/html:/opt/www/html:rw
+      - /opt/www/public:/opt/www/public:rw
+      - /opt/www/logs:/var/log/apache2:rw
   database:
     image: mariadb:10.2
     command: [--ignore-db-dir=lost+found]
@@ -21,7 +34,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
-       - /opt/mysql_data:/var/lib/mysql
+       - /opt/www/mysql_data:/var/lib/mysql
     command: mysqld --max_allowed_packet=1024M
     ports:
       - "3306:3306"
@@ -34,5 +47,6 @@ services:
     environment:
       - MEMORY_LIMIT=512M
       - PMA_HOST=database
-      - UPLOAD_LIMIT=1024M
+      - UPLOAD_LIMIT=6G
+      - MAX_EXECUTION_TIME=1800
     restart: always
