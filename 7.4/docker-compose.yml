@@ -1,11 +1,11 @@
 version: '3.3'
 services:
-  apache74:
+  apache7.4:
     image: noamansaiyed/apm-apache:7.4
-    container_name: apache74
+    container_name: apache7.4
     links:
       - database
-      - php74
+      - php7.4
       - phpmyadmin
     volumes:
       - /opt/www/html:/opt/www/html:rw
@@ -15,10 +15,10 @@ services:
       - "80:80"
       - "443:443"
     restart: always
-  php74:
+  php7.4:
     image: noamansaiyed/apm-fpm:7.4
     user: ${UID_GID}
-    container_name: php74
+    container_name: php7.4
     restart: always
     working_dir: /opt/www/
     links:

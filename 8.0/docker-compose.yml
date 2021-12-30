@@ -5,7 +5,7 @@ services:
     container_name: apache8.0
     links:
       - database
-      - php74
+      - php8.0
       - phpmyadmin
     volumes:
       - /opt/www/html:/opt/www/html:rw
