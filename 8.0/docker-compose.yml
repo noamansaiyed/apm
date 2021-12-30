@@ -1,8 +1,8 @@
 version: '3.3'
 services:
-  apache80:
+  apache8.0:
     image: noamansaiyed/apm-apache:8.0
-    container_name: apache80
+    container_name: apache8.0
     links:
       - database
       - php74
@@ -15,10 +15,10 @@ services:
       - "80:80"
       - "443:443"
     restart: always
-  php74:
+  php8.0:
     image: noamansaiyed/apm-fpm:8.0
     user: ${UID_GID}
-    container_name: php80
+    container_name: php8.0
     restart: always
     working_dir: /opt/www/
     links:
