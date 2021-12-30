@@ -1,0 +1,52 @@
+version: '3.3'
+services:
+  apache80:
+    image: noamansaiyed/apm-apache:8.0
+    container_name: apache80
+    links:
+      - database
+      - php74
+      - phpmyadmin
+    volumes:
+      - /opt/www/html:/opt/www/html:rw
+      - /opt/www/public:/opt/www/public:rw
+      - /opt/www/logs:/var/log/apache2:rw
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+  php74:
+    image: noamansaiyed/apm-fpm:8.0
+    user: ${UID_GID}
+    container_name: php80
+    restart: always
+    working_dir: /opt/www/
+    links:
+      - database
+    volumes:
+      - /opt/www/html:/opt/www/html:rw
+      - /opt/www/public:/opt/www/public:rw
+      - /opt/www/logs:/var/log/apache2:rw
+  database:
+    image: mariadb:10.2
+    command: [--ignore-db-dir=lost+found]
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+       - /opt/www/mysql_data:/var/lib/mysql
+    command: mysqld --max_allowed_packet=1024M
+    ports:
+      - "3306:3306"
+    restart: always
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "9000:80"
+    environment:
+      - MEMORY_LIMIT=512M
+      - PMA_HOST=database
+      - UPLOAD_LIMIT=6G
+      - MAX_EXECUTION_TIME=1800
+    restart: always
